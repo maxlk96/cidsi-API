@@ -1,6 +1,6 @@
 ## cidsi API
 
-cidsi is a simple API that processes the VATSIM data feed and outputs active ATC positions, showing their CID and SI (sector indicator).
+cidsi is a simple API that processes the VATSIM data feed and outputs active ATC positions (where prim frequency is activated), showing their CID and SI (sector indicator).
 
 The SI is loaded from `callsigns.txt`, which is created using the included Python script
 
