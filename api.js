@@ -2,12 +2,13 @@ const express = require('express');
 const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
+const cors = require('cors'); // Import cors
 
 const app = express();
 const port = 3000;
 
-let cachedVatsimData = null; // To store the VATSIM data
-let lastFetchTime = 0; // To track the last time data was fetched
+// Enable CORS for all routes
+app.use(cors());
 
 // Helper function to load and parse the callsigns.txt file
 const loadCallsigns = () => {
@@ -53,37 +54,18 @@ const matchPositions = (vatsimData, callsignData) => {
     .filter(position => position !== null); // Filter out null matches
 };
 
-// Function to fetch VATSIM data (called every 15 seconds)
-const fetchVatsimData = async () => {
-  try {
-    const response = await axios.get('https://data.vatsim.net/v3/vatsim-data.json');
-    cachedVatsimData = response.data; // Cache the data
-    lastFetchTime = Date.now(); // Update the last fetch time
-    console.log('VATSIM data updated');
-  } catch (error) {
-    console.error('Error fetching VATSIM data:', error);
-  }
-};
-
-// Fetch VATSIM data every 15 seconds
-setInterval(fetchVatsimData, 15000);
-
-// Initially load the data
-fetchVatsimData();
-
 // Route for fetching the matching positions
-app.get('/vatsim-matches', async (req, res) => {
+app.get('/cidsi', async (req, res) => {
   try {
     // Load callsigns from file
     const callsignData = loadCallsigns();
 
-    // Ensure VATSIM data is available
-    if (!cachedVatsimData) {
-      return res.status(503).json({ error: 'VATSIM data not yet available, please try again in a few seconds' });
-    }
+    // Fetch VATSIM data
+    const vatsimResponse = await axios.get('https://data.vatsim.net/v3/vatsim-data.json');
+    const vatsimData = vatsimResponse.data;
 
     // Match positions
-    const matchedPositions = matchPositions(cachedVatsimData, callsignData);
+    const matchedPositions = matchPositions(vatsimData, callsignData);
 
     // Send the matched positions as the API response
     res.json(matchedPositions);
