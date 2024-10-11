@@ -18,7 +18,7 @@ Contributions of any kind are most welcome.
 
 ### For developers
 
-It's a fairly straight-forward .js projekt. Python is required for the callsign.txt parser.
+It's a fairly straight-forward .js project. Python is required for the callsign.txt parser.
 
 ```sh
 node api.js
